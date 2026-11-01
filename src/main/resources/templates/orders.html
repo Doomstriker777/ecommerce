@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - AB Mart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6C63FF; --secondary: #FF6584; --dark: #2D2B55; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, var(--dark), #1a1a2e) !important; }
+        .navbar-brand { font-weight: 700; }
+        .navbar-brand span { color: var(--secondary); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .badge-cart { position: absolute; top: -5px; right: -10px; background: var(--secondary); font-size: 0.7rem; }
+        .footer { background: var(--dark); color: white; padding: 30px 0; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/home}"><i class="fas fa-store me-2"></i>AB <span>Mart</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/shop}">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">About</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contact}">Contact</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link position-relative" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge badge-cart rounded-pill" th:text="${cartItemCount}" th:if="${cartItemCount > 0}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/wishlist}"><i class="fas fa-heart"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/profile}"><i class="fas fa-user"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" th:href="@{/orders}"><i class="fas fa-box"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-link nav-link"><i class="fas fa-sign-out-alt"></i></button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4"><i class="fas fa-box text-primary me-2"></i> Order History</h2>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="card p-5 text-center my-4">
+        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+        <h4 class="fw-bold">No orders placed yet!</h4>
+        <p class="text-muted">Start shopping for your favorite anime merchandise today.</p>
+        <div>
+            <a th:href="@{/shop}" class="btn btn-primary"><i class="fas fa-shopping-bag me-2"></i> Start Shopping</a>
+        </div>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(orders)}" class="space-y-4">
+        <div th:each="order : ${orders}" class="card mb-3 p-4">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <span class="text-muted small">ORDER ID</span>
+                    <h5 class="fw-bold mb-0" th:text="'#' + ${order.id}">#1</h5>
+                    <small class="text-muted" th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy HH:mm')}">Date</small>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small">TOTAL</span>
+                    <h5 class="fw-bold text-primary mb-0" th:text="'$' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">$0.00</h5>
+                    <small class="text-muted" th:text="${#lists.size(order.orderItems)} + ' items'">0 items</small>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small">STATUS</span>
+                    <div>
+                        <span th:if="${order.status.name() == 'PENDING'}" class="badge bg-warning text-dark">Pending</span>
+                        <span th:if="${order.status.name() == 'CONFIRMED'}" class="badge bg-info">Confirmed</span>
+                        <span th:if="${order.status.name() == 'SHIPPED'}" class="badge bg-primary">Shipped</span>
+                        <span th:if="${order.status.name() == 'DELIVERED'}" class="badge bg-success">Delivered</span>
+                        <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger">Cancelled</span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                    <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-outline-primary btn-sm">
+                        View Details <i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer mt-auto text-center">
+    <div class="container">
+        <p class="mb-0">&copy; 2026 AB Mart. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

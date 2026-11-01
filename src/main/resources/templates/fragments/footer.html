@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ==================== FOOTER FRAGMENT ==================== -->
+<footer th:fragment="footer" class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- About Column -->
+      <div class="footer-col">
+        <span class="footer-brand">AB Mart</span>
+        <p>Your one-stop destination for authentic anime accessories, figures, and collectibles. We bring the world of anime closer to you.</p>
+        <div class="footer-social">
+          <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-col">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a th:href="@{/}">Home</a></li>
+          <li><a th:href="@{/shop}">Shop</a></li>
+          <li><a th:href="@{/about}">About Us</a></li>
+          <li><a th:href="@{/contact}">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Service -->
+      <div class="footer-col">
+        <h3>Customer Service</h3>
+        <ul>
+          <li><a th:href="@{/orders}">Track Order</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+          <li><a href="#">Returns &amp; Exchanges</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="footer-col">
+        <h3>Newsletter</h3>
+        <p>Subscribe to get updates on new arrivals and exclusive offers!</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('Subscribed successfully!', 'success');">
+          <input type="email" placeholder="Your email address" required/>
+          <button type="submit"><i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; 2026 AB Mart. All rights reserved. Made with <i class="fas fa-heart" style="color: var(--primary);"></i> for anime fans.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to top button -->
+<button th:fragment="backToTop" class="back-to-top" title="Back to top">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Toast container -->
+<div th:fragment="toastContainer" class="toast-container" id="toastContainer"></div>
+
+<!-- ==================== SCRIPTS FRAGMENT ==================== -->
+<th:block th:fragment="scripts">
+  <script th:src="@{/js/app.js}"></script>
+</th:block>
+
+</html>

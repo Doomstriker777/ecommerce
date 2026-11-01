@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB Mart - Anime Accessories Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6C63FF; --secondary: #FF6584; --dark: #2D2B55; --light: #F8F9FA; }
+        body { font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, var(--dark), #1a1a2e) !important; }
+        .navbar-brand { font-weight: 700; font-size: 1.5rem; }
+        .navbar-brand span { color: var(--secondary); }
+        .hero-section { background: linear-gradient(135deg, var(--dark) 0%, #1a1a2e 100%); color: white; padding: 80px 0; }
+        .hero-section h1 { font-size: 3rem; font-weight: 800; }
+        .hero-section .highlight { color: var(--secondary); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .btn-primary:hover { background: #5a52d5; border-color: #5a52d5; }
+        .btn-secondary-custom { background: var(--secondary); border-color: var(--secondary); color: white; }
+        .product-card { border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 15px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .product-card .card-img-top { height: 220px; object-fit: cover; background: #f0f0f0; }
+        .product-card .badge-featured { position: absolute; top: 10px; right: 10px; background: var(--secondary); }
+        .product-card .price { color: var(--primary); font-weight: 700; font-size: 1.2rem; }
+        .category-card { border-radius: 12px; overflow: hidden; text-decoration: none; color: inherit; transition: transform 0.3s; }
+        .category-card:hover { transform: translateY(-5px); }
+        .section-title { font-weight: 700; position: relative; display: inline-block; }
+        .section-title::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 60px; height: 3px; background: var(--secondary); }
+        .footer { background: var(--dark); color: white; padding: 40px 0; }
+        .badge-cart { position: absolute; top: -5px; right: -10px; background: var(--secondary); font-size: 0.7rem; }
+        .rating .fas { color: #FFD700; }
+        .rating .far { color: #ddd; }
+        .img-placeholder { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; height: 220px; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/home}"><i class="fas fa-store me-2"></i>AB <span>Mart</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link active" th:href="@{/home}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/shop}">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">About</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contact}">Contact</a></li>
+            </ul>
+            <form class="d-flex me-3" th:action="@{/shop/search}" method="get">
+                <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Search products...">
+                <button class="btn btn-outline-light btn-sm" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link position-relative" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge badge-cart rounded-pill" th:text="${cartItemCount}" th:if="${cartItemCount > 0}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/wishlist}"><i class="fas fa-heart"></i></a>
+                </li>
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> <span sec:authentication="name">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/profile}"><i class="fas fa-user-circle me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" th:href="@{/orders}"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin}"><i class="fas fa-cog me-2"></i>Admin Panel</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/register}"><i class="fas fa-user-plus me-1"></i>Register</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1>Welcome to AB <span class="highlight">Mart</span></h1>
+        <p class="lead mb-4">Your one-stop shop for premium anime accessories, figures, and merchandise!</p>
+        <a th:href="@{/shop}" class="btn btn-lg btn-primary me-2"><i class="fas fa-shopping-bag me-2"></i>Shop Now</a>
+        <a th:href="@{/about}" class="btn btn-lg btn-outline-light">Learn More</a>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5" th:if="${featuredProducts != null && !featuredProducts.isEmpty()}">
+    <div class="container">
+        <h2 class="section-title mb-4">Featured Products</h2>
+        <div class="row g-4 mt-2">
+            <div class="col-lg-3 col-md-4 col-sm-6" th:each="product : ${featuredProducts}">
+                <div class="card product-card h-100">
+                    <div class="position-relative overflow-hidden" style="height: 220px; background: #2D2B55;">
+                        <img th:src="@{${product.imageUrl}}" class="card-img-top w-100 h-100" style="object-fit: cover; transition: transform 0.3s;" onerror="this.src='https://placehold.co/300x220/2D2B55/white?text=Anime+Merch'" th:alt="${product.name}">
+                        <span class="badge badge-featured" th:if="${product.featured}">Featured</span>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <small class="text-muted" th:text="${product.category.name}">Category</small>
+                        <h6 class="card-title mt-1" th:text="${product.name}">Product Name</h6>
+                        <div class="rating mb-2">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i th:class="${i <= product.rating} ? 'fas fa-star' : 'far fa-star'" style="font-size: 0.8rem;"></i>
+                            </span>
+                            <small class="text-muted" th:text="'(' + ${product.reviewCount} + ')'"> (0)</small>
+                        </div>
+                        <div class="mt-auto">
+                            <span class="price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+                        </div>
+                        <div class="mt-2 d-flex gap-2">
+                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary flex-fill">View</a>
+                            <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" sec:authorize="isAuthenticated()">
+                                <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-cart-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="py-5 bg-light" th:if="${categories != null && !categories.isEmpty()}">
+    <div class="container">
+        <h2 class="section-title mb-4">Shop by Category</h2>
+        <div class="row g-4 mt-2">
+            <div class="col-lg-4 col-md-6" th:each="category : ${categories}">
+                <a th:href="@{/shop/category/{id}(id=${category.id})}" class="card category-card h-100 text-decoration-none shadow-sm overflow-hidden">
+                    <div style="height: 160px; overflow: hidden; background: #2D2B55;">
+                        <img th:src="@{${category.imageUrl}}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.4s;" onerror="this.src='https://placehold.co/400x160/2D2B55/white?text=Anime+Category'" th:alt="${category.name}">
+                    </div>
+                    <div class="card-body text-center py-3">
+                        <h5 class="fw-bold mb-1" th:text="${category.name}">Category</h5>
+                        <p class="text-muted small mb-0" th:text="${category.description}">Description</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- New Arrivals -->
+<section class="py-5" th:if="${newArrivals != null && !newArrivals.isEmpty()}">
+    <div class="container">
+        <h2 class="section-title mb-4">New Arrivals</h2>
+        <div class="row g-4 mt-2">
+            <div class="col-lg-3 col-md-4 col-sm-6" th:each="product : ${newArrivals}">
+                <div class="card product-card h-100">
+                    <div class="position-relative overflow-hidden" style="height: 220px; background: #2D2B55;">
+                        <img th:src="@{${product.imageUrl}}" class="card-img-top w-100 h-100" style="object-fit: cover; transition: transform 0.3s;" onerror="this.src='https://placehold.co/300x220/2D2B55/white?text=Anime+Merch'" th:alt="${product.name}">
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <small class="text-muted" th:text="${product.category.name}">Category</small>
+                        <h6 class="card-title mt-1" th:text="${product.name}">Product</h6>
+                        <div class="mt-auto">
+                            <span class="price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+                        </div>
+                        <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5><i class="fas fa-store me-2"></i>AB Mart</h5>
+                <p class="small">Your premium destination for anime merchandise and accessories.</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled small">
+                    <li><a th:href="@{/shop}" class="text-light text-decoration-none">Shop</a></li>
+                    <li><a th:href="@{/about}" class="text-light text-decoration-none">About</a></li>
+                    <li><a th:href="@{/contact}" class="text-light text-decoration-none">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Contact Us</h6>
+                <p class="small"><i class="fas fa-envelope me-2"></i>support@abmart.com</p>
+                <p class="small"><i class="fas fa-phone me-2"></i>+1 (555) 123-4567</p>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <p class="text-center small mb-0">&copy; 2024 AB Mart. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

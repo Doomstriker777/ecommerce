@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- ==================== HEAD FRAGMENT ==================== -->
+<head th:fragment="head(pageTitle)">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="AB Mart — Your Ultimate Anime Accessories Store"/>
+  <meta name="_csrf" th:content="${_csrf.token}" th:if="${_csrf != null}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" th:if="${_csrf != null}"/>
+  <title th:text="${pageTitle} ? ${pageTitle} + ' | AB Mart' : 'AB Mart — Anime Accessories Store'">AB Mart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+
+<!-- ==================== NAVBAR FRAGMENT ==================== -->
+<nav th:fragment="navbar" class="navbar">
+  <div class="container">
+    <!-- Logo -->
+    <a th:href="@{/}" class="navbar-brand">AB Mart</a>
+
+    <!-- Nav Links -->
+    <div class="nav-links" id="navLinks">
+      <a th:href="@{/}" th:classappend="${currentPage == 'home'} ? 'active'">Home</a>
+      <a th:href="@{/shop}" th:classappend="${currentPage == 'shop'} ? 'active'">Shop</a>
+
+      <!-- Categories Dropdown -->
+      <div class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle" th:classappend="${currentPage == 'categories'} ? 'active'">
+          Categories <i class="fas fa-chevron-down"></i>
+        </a>
+        <div class="nav-dropdown-menu">
+          <a th:href="@{/shop?category=figures}">Figures &amp; Statues</a>
+          <a th:href="@{/shop?category=clothing}">Clothing &amp; Apparel</a>
+          <a th:href="@{/shop?category=accessories}">Accessories</a>
+          <a th:href="@{/shop?category=posters}">Posters &amp; Art</a>
+          <a th:href="@{/shop?category=collectibles}">Collectibles</a>
+          <a th:href="@{/shop?category=manga}">Manga &amp; Books</a>
+        </div>
+      </div>
+
+      <a th:href="@{/about}" th:classappend="${currentPage == 'about'} ? 'active'">About</a>
+      <a th:href="@{/contact}" th:classappend="${currentPage == 'contact'} ? 'active'">Contact</a>
+    </div>
+
+    <!-- Nav Icons -->
+    <div class="nav-icons">
+      <!-- Search -->
+      <a href="#" class="nav-icon search-toggle" title="Search">
+        <i class="fas fa-search"></i>
+      </a>
+
+      <!-- Wishlist -->
+      <a th:href="@{/wishlist}" class="nav-icon" title="Wishlist">
+        <i class="fas fa-heart"></i>
+        <span class="badge-count wishlist-count" th:text="${wishlistCount != null ? wishlistCount : 0}"
+              th:if="${wishlistCount != null && wishlistCount > 0}">0</span>
+      </a>
+
+      <!-- Cart -->
+      <a th:href="@{/cart}" class="nav-icon" title="Cart">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge-count cart-count" th:text="${cartCount != null ? cartCount : 0}"
+              th:if="${cartCount != null && cartCount > 0}">0</span>
+      </a>
+
+      <!-- User Dropdown -->
+      <div class="user-dropdown">
+        <a href="#" class="nav-icon">
+          <i class="fas fa-user"></i>
+        </a>
+        <div class="user-dropdown-menu">
+          <!-- Not authenticated -->
+          <div sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Register</a>
+          </div>
+          <!-- Authenticated -->
+          <div sec:authorize="isAuthenticated()">
+            <a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Profile</a>
+            <a th:href="@{/orders}"><i class="fas fa-box"></i> My Orders</a>
+            <a th:href="@{/wishlist}"><i class="fas fa-heart"></i> Wishlist</a>
+            <div class="divider"></div>
+            <!-- Admin link -->
+            <a th:href="@{/admin/dashboard}" sec:authorize="hasRole('ADMIN')">
+              <i class="fas fa-tachometer-alt"></i> Admin Panel
+            </a>
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+              <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hamburger -->
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== SEARCH OVERLAY FRAGMENT ==================== -->
+<div th:fragment="searchOverlay" class="search-overlay" id="searchOverlay">
+  <span class="search-close">&times;</span>
+  <div class="search-overlay-inner">
+    <input type="text" placeholder="Search for anime accessories..." autofocus/>
+  </div>
+</div>
+
+</html>

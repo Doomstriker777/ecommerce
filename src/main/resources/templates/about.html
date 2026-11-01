@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - AB Mart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6C63FF; --secondary: #FF6584; --dark: #2D2B55; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, var(--dark), #1a1a2e) !important; }
+        .navbar-brand { font-weight: 700; }
+        .navbar-brand span { color: var(--secondary); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .badge-cart { position: absolute; top: -5px; right: -10px; background: var(--secondary); font-size: 0.7rem; }
+        .footer { background: var(--dark); color: white; padding: 30px 0; }
+        .hero-banner { background: linear-gradient(135deg, #1a1a2e, #2D2B55); color: white; padding: 60px 0; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/home}"><i class="fas fa-store me-2"></i>AB <span>Mart</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/shop}">Shop</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/about}">About</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contact}">Contact</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link position-relative" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge badge-cart rounded-pill" th:text="${cartItemCount}" th:if="${cartItemCount > 0}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/wishlist}"><i class="fas fa-heart"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/profile}"><i class="fas fa-user"></i></a></li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()"><a class="nav-link" th:href="@{/login}">Login</a></li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()"><a class="btn btn-sm btn-primary ms-2" th:href="@{/register}">Sign Up</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="hero-banner text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold">About <span style="color: var(--secondary)">AB Mart</span></h1>
+        <p class="lead text-light opacity-75">Your #1 destination for curated anime merchandise, figures, and collectibles.</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <h2 class="fw-bold mb-3">Forged by Otakus, for Otakus</h2>
+            <p class="text-muted leading-relaxed">
+                At <strong>AB Mart</strong>, we live and breathe anime culture. From the high-stakes battles of <em>Naruto</em> and <em>Dragon Ball Z</em> to the deep mysteries of <em>Attack on Titan</em> and <em>Demon Slayer</em>, anime is more than just entertainment — it's an art form that brings millions together.
+            </p>
+            <p class="text-muted">
+                Founded with a mission to bring high-quality, authentic anime figures, wearables, jewelry, room decor, and everyday accessories directly to fans worldwide, AB Mart is committed to excellence, fast shipping, and exceptional customer satisfaction.
+            </p>
+            <a th:href="@{/shop}" class="btn btn-primary mt-2"><i class="fas fa-shopping-bag me-2"></i> Browse Our Collection</a>
+        </div>
+        <div class="col-lg-6 text-center">
+            <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop" class="img-fluid rounded-4 shadow" alt="Anime figures display">
+        </div>
+    </div>
+
+    <!-- Feature Pillars -->
+    <div class="row g-4 text-center mt-3 mb-5">
+        <div class="col-md-4">
+            <div class="card p-4 h-100">
+                <i class="fas fa-certificate fa-3x text-primary mb-3"></i>
+                <h5 class="fw-bold">100% Authentic Merch</h5>
+                <p class="text-muted small">Every figure, apparel item, and accessory is inspected for top-tier quality and authenticity.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100">
+                <i class="fas fa-shipping-fast fa-3x text-secondary mb-3"></i>
+                <h5 class="fw-bold">Fast &amp; Tracked Shipping</h5>
+                <p class="text-muted small">Carefully packaged with collector-grade bubble wrap to guarantee safe arrival.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100">
+                <i class="fas fa-headset fa-3x text-warning mb-3"></i>
+                <h5 class="fw-bold">24/7 Fan Support</h5>
+                <p class="text-muted small">Have a question about sizing or pre-orders? Our anime specialist team is always here to assist.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer mt-auto text-center">
+    <div class="container">
+        <p class="mb-0">&copy; 2026 AB Mart. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

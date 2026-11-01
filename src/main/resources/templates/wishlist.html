@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - AB Mart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6C63FF; --secondary: #FF6584; --dark: #2D2B55; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, var(--dark), #1a1a2e) !important; }
+        .navbar-brand { font-weight: 700; }
+        .navbar-brand span { color: var(--secondary); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .btn-secondary-custom { background: var(--secondary); border-color: var(--secondary); color: white; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .badge-cart { position: absolute; top: -5px; right: -10px; background: var(--secondary); font-size: 0.7rem; }
+        .product-card { border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 15px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .price { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
+        .footer { background: var(--dark); color: white; padding: 30px 0; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/home}"><i class="fas fa-store me-2"></i>AB <span>Mart</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/shop}">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">About</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contact}">Contact</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link position-relative" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge badge-cart rounded-pill" th:text="${cartItemCount}" th:if="${cartItemCount > 0}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" th:href="@{/wishlist}"><i class="fas fa-heart text-danger"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/profile}"><i class="fas fa-user"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/orders}"><i class="fas fa-box"></i></a></li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-link nav-link"><i class="fas fa-sign-out-alt"></i></button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="d-flex align-items-center mb-4">
+        <h2 class="fw-bold mb-0"><i class="fas fa-heart text-danger me-2"></i> My Wishlist</h2>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i><span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Empty Wishlist -->
+    <div th:if="${#lists.isEmpty(wishlistItems)}" class="card p-5 text-center my-4">
+        <i class="far fa-heart fa-4x text-muted mb-3"></i>
+        <h4 class="fw-bold">Your wishlist is empty!</h4>
+        <p class="text-muted">Save your favorite anime figures, clothes, and accessories for later.</p>
+        <div>
+            <a th:href="@{/shop}" class="btn btn-primary"><i class="fas fa-store me-2"></i> Discover Anime Merch</a>
+        </div>
+    </div>
+
+    <!-- Items Grid -->
+    <div th:if="${!#lists.isEmpty(wishlistItems)}" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" th:each="item : ${wishlistItems}">
+            <div class="card h-100 product-card">
+                <img th:src="@{${item.product.imageUrl}}"
+                     onerror="this.src='https://placehold.co/300x220/6C63FF/white?text=Anime'"
+                     class="card-img-top" style="height: 220px; object-fit: cover;" alt="product">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title fw-bold">
+                        <a th:href="@{/product/{id}(id=${item.product.id})}" class="text-dark text-decoration-none" th:text="${item.product.name}">Product Name</a>
+                    </h6>
+                    <p class="card-text text-muted small flex-grow-1" th:text="${#strings.abbreviate(item.product.description, 70)}">Description</p>
+                    <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+                        <span class="price" th:text="'$' + ${#numbers.formatDecimal(item.product.price, 1, 2)}">$0.00</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <form th:action="@{/cart/add/{productId}(productId=${item.product.id})}" method="post" class="flex-grow-1">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                            </button>
+                        </form>
+                        <form th:action="@{/wishlist/toggle/{productId}(productId=${item.product.id})}" method="post">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer mt-auto text-center">
+    <div class="container">
+        <p class="mb-0">&copy; 2026 AB Mart. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
